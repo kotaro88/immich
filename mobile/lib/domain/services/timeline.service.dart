@@ -10,6 +10,7 @@ import 'package:immich_mobile/domain/services/setting.service.dart';
 import 'package:immich_mobile/domain/utils/event_stream.dart';
 import 'package:immich_mobile/infrastructure/repositories/timeline.repository.dart';
 import 'package:immich_mobile/utils/async_mutex.dart';
+import 'package:logging/logging.dart';
 
 typedef TimelineAssetSource = Future<List<BaseAsset>> Function(
   int index,
@@ -77,6 +78,7 @@ class TimelineService {
   int _bufferOffset = 0;
   List<BaseAsset> _buffer = [];
   StreamSubscription? _bucketSubscription;
+  final _log = Logger('TimelineService');
 
   int _totalAssets = 0;
   int get totalAssets => _totalAssets;
@@ -128,10 +130,10 @@ class TimelineService {
 
   Stream<List<Bucket>> Function() get watchBuckets => _bucketSource;
 
-  Future<List<BaseAsset>> loadAssets(int index, int count) =>
+  Future<List<BaseAsset>?> loadAssets(int index, int count) =>
       _mutex.run(() => _loadAssets(index, count));
 
-  Future<List<BaseAsset>> _loadAssets(int index, int count) async {
+  Future<List<BaseAsset>?> _loadAssets(int index, int count) async {
     if (hasRange(index, count)) {
       return getAssets(index, count);
     }
@@ -169,9 +171,10 @@ class TimelineService {
       index + count <= _bufferOffset + _buffer.length &&
       index + count <= _totalAssets;
 
-  List<BaseAsset> getAssets(int index, int count) {
+  List<BaseAsset>? getAssets(int index, int count) {
     if (!hasRange(index, count)) {
-      throw RangeError('TimelineService::getAssets Index out of range');
+      _log.warning('TimelineService::getAssets Index out of range');
+      return null;
     }
     int start = index - _bufferOffset;
     return _buffer.slice(start, start + count);

@@ -112,8 +112,9 @@ class _BulkSelectIconButton extends ConsumerWidget {
     List<BaseAsset> bucketAssets;
     try {
       bucketAssets = ref
-          .watch(timelineServiceProvider)
-          .getAssets(assetOffset, bucket.assetCount);
+              .watch(timelineServiceProvider)
+              .getAssets(assetOffset, bucket.assetCount) ??
+          [];
     } catch (e) {
       bucketAssets = <BaseAsset>[];
     }

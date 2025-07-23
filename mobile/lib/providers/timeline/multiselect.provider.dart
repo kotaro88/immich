@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
 import 'package:immich_mobile/domain/services/timeline.service.dart';
 import 'package:immich_mobile/providers/infrastructure/timeline.provider.dart';
@@ -130,7 +129,7 @@ class MultiSelectNotifier extends Notifier<MultiSelectState> {
     final assets = await _timelineService.loadAssets(offset, bucketCount);
     final selectedAssets = state.selectedAssets.toSet();
 
-    selectedAssets.addAll(assets);
+    selectedAssets.addAll(assets ?? []);
 
     state = state.copyWith(
       selectedAssets: selectedAssets,
@@ -141,14 +140,14 @@ class MultiSelectNotifier extends Notifier<MultiSelectState> {
     final assets = await _timelineService.loadAssets(offset, bucketCount);
     final selectedAssets = state.selectedAssets.toSet();
 
-    selectedAssets.removeAll(assets);
+    selectedAssets.removeAll(assets ?? []);
 
     state = state.copyWith(selectedAssets: selectedAssets);
   }
 
   void toggleBucketSelection(int offset, int bucketCount) async {
     final assets = await _timelineService.loadAssets(offset, bucketCount);
-    toggleBucketSelectionByAssets(assets);
+    toggleBucketSelectionByAssets(assets ?? []);
   }
 
   void toggleBucketSelectionByAssets(List<BaseAsset> bucketAssets) {

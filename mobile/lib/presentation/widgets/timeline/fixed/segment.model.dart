@@ -107,19 +107,22 @@ class _FixedSegmentRow extends ConsumerWidget {
     }
 
     if (timelineService.hasRange(assetIndex, assetCount)) {
-      return _buildAssetRow(
-        context,
-        timelineService.getAssets(assetIndex, assetCount),
-      );
+      final assets = timelineService.getAssets(assetIndex, assetCount);
+      if (assets == null) {
+        return _buildPlaceholder(context);
+      }
+
+      return _buildAssetRow(context, assets);
     }
 
-    return FutureBuilder<List<BaseAsset>>(
+    return FutureBuilder<List<BaseAsset>?>(
       future: timelineService.loadAssets(assetIndex, assetCount),
       builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
+        if (snapshot.connectionState != ConnectionState.done ||
+            snapshot.data == null) {
           return _buildPlaceholder(context);
         }
-        return _buildAssetRow(context, snapshot.requireData);
+        return _buildAssetRow(context, snapshot.data!);
       },
     );
   }
