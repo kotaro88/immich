@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
-import 'package:immich_mobile/domain/interfaces/local_album.interface.dart';
+import 'package:immich_mobile/domain/models/album/local_album.model.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
-import 'package:immich_mobile/domain/models/local_album.model.dart';
-import 'package:immich_mobile/domain/models/store.model.dart';
-import 'package:immich_mobile/domain/services/store.service.dart';
+import 'package:immich_mobile/infrastructure/repositories/local_album.repository.dart';
 import 'package:immich_mobile/platform/native_sync_api.g.dart';
 import 'package:immich_mobile/presentation/pages/dev/dev_logger.dart';
 import 'package:immich_mobile/utils/diff.dart';
@@ -14,24 +12,18 @@ import 'package:logging/logging.dart';
 import 'package:platform/platform.dart';
 
 class LocalSyncService {
-  final ILocalAlbumRepository _localAlbumRepository;
+  final DriftLocalAlbumRepository _localAlbumRepository;
   final NativeSyncApi _nativeSyncApi;
   final Platform _platform;
-  final StoreService _storeService;
   final Logger _log = Logger("DeviceSyncService");
 
   LocalSyncService({
-    required ILocalAlbumRepository localAlbumRepository,
+    required DriftLocalAlbumRepository localAlbumRepository,
     required NativeSyncApi nativeSyncApi,
-    required StoreService storeService,
     Platform? platform,
   })  : _localAlbumRepository = localAlbumRepository,
         _nativeSyncApi = nativeSyncApi,
-        _storeService = storeService,
         _platform = platform ?? const LocalPlatform();
-
-  bool get _ignoreIcloudAssets =>
-      _storeService.get(StoreKey.ignoreIcloudAssets, false) == true;
 
   Future<void> sync({bool full = false}) async {
     final Stopwatch stopwatch = Stopwatch()..start();
@@ -74,8 +66,7 @@ class LocalSyncService {
         // On iOS, we need to full sync albums that are marked as cloud as the delta sync
         // does not include changes for cloud albums. If ignoreIcloudAssets is enabled,
         // remove the albums from the local database from the previous sync
-        final cloudAlbums =
-            deviceAlbums.where((a) => a.isCloud).toLocalAlbums();
+        final cloudAlbums = deviceAlbums.where((a) => a.isCloud).toLocalAlbums();
         for (final album in cloudAlbums) {
           final dbAlbum = dbAlbums.firstWhereOrNull((a) => a.id == album.id);
           if (dbAlbum == null) {
@@ -84,11 +75,7 @@ class LocalSyncService {
             );
             continue;
           }
-          if (_ignoreIcloudAssets) {
-            await removeAlbum(dbAlbum);
-          } else {
-            await updateAlbum(dbAlbum, album);
-          }
+          await updateAlbum(dbAlbum, album);
         }
       }
 
@@ -106,14 +93,8 @@ class LocalSyncService {
     try {
       final Stopwatch stopwatch = Stopwatch()..start();
 
-      List<PlatformAlbum> deviceAlbums =
-          List.of(await _nativeSyncApi.getAlbums());
-      if (_platform.isIOS && _ignoreIcloudAssets) {
-        deviceAlbums.removeWhere((album) => album.isCloud);
-      }
-
-      final dbAlbums =
-          await _localAlbumRepository.getAll(sortBy: {SortLocalAlbumsBy.id});
+      final deviceAlbums = await _nativeSyncApi.getAlbums();
+      final dbAlbums = await _localAlbumRepository.getAll(sortBy: {SortLocalAlbumsBy.id});
 
       await diffSortedLists(
         dbAlbums,
@@ -137,9 +118,7 @@ class LocalSyncService {
     try {
       _log.fine("Adding device album ${album.name}");
 
-      final assets = album.assetCount > 0
-          ? await _nativeSyncApi.getAssetsForAlbum(album.id)
-          : <PlatformAsset>[];
+      final assets = album.assetCount > 0 ? await _nativeSyncApi.getAssetsForAlbum(album.id) : <PlatformAsset>[];
 
       await _localAlbumRepository.upsert(
         album,
@@ -205,10 +184,8 @@ class LocalSyncService {
         return false;
       }
 
-      final updatedTime =
-          (dbAlbum.updatedAt.millisecondsSinceEpoch ~/ 1000) + 1;
-      final newAssetsCount =
-          await _nativeSyncApi.getAssetsCountSince(deviceAlbum.id, updatedTime);
+      final updatedTime = (dbAlbum.updatedAt.millisecondsSinceEpoch ~/ 1000) + 1;
+      final newAssetsCount = await _nativeSyncApi.getAssetsCountSince(deviceAlbum.id, updatedTime);
 
       // Early return if no new assets were found
       if (newAssetsCount == 0) {
@@ -247,13 +224,9 @@ class LocalSyncService {
   Future<bool> fullDiff(LocalAlbum dbAlbum, LocalAlbum deviceAlbum) async {
     try {
       final assetsInDevice = deviceAlbum.assetCount > 0
-          ? await _nativeSyncApi
-              .getAssetsForAlbum(deviceAlbum.id)
-              .then((a) => a.toLocalAssets())
+          ? await _nativeSyncApi.getAssetsForAlbum(deviceAlbum.id).then((a) => a.toLocalAssets())
           : <LocalAsset>[];
-      final assetsInDb = dbAlbum.assetCount > 0
-          ? await _localAlbumRepository.getAssets(dbAlbum.id)
-          : <LocalAsset>[];
+      final assetsInDb = dbAlbum.assetCount > 0 ? await _localAlbumRepository.getAssets(dbAlbum.id) : <LocalAsset>[];
 
       if (deviceAlbum.assetCount == 0) {
         _log.fine(
@@ -338,9 +311,7 @@ class LocalSyncService {
   }
 
   bool _albumsEqual(LocalAlbum a, LocalAlbum b) {
-    return a.name == b.name &&
-        a.assetCount == b.assetCount &&
-        a.updatedAt.isAtSameMomentAs(b.updatedAt);
+    return a.name == b.name && a.assetCount == b.assetCount && a.updatedAt.isAtSameMomentAs(b.updatedAt);
   }
 }
 
@@ -350,9 +321,7 @@ extension on Iterable<PlatformAlbum> {
       (e) => LocalAlbum(
         id: e.id,
         name: e.name,
-        updatedAt: e.updatedAt == null
-            ? DateTime.now()
-            : DateTime.fromMillisecondsSinceEpoch(e.updatedAt! * 1000),
+        updatedAt: e.updatedAt == null ? DateTime.now() : DateTime.fromMillisecondsSinceEpoch(e.updatedAt! * 1000),
         assetCount: e.assetCount,
       ),
     ).toList();
@@ -367,15 +336,12 @@ extension on Iterable<PlatformAsset> {
         name: e.name,
         checksum: null,
         type: AssetType.values.elementAtOrNull(e.type) ?? AssetType.other,
-        createdAt: e.createdAt == null
-            ? DateTime.now()
-            : DateTime.fromMillisecondsSinceEpoch(e.createdAt! * 1000),
-        updatedAt: e.updatedAt == null
-            ? DateTime.now()
-            : DateTime.fromMillisecondsSinceEpoch(e.updatedAt! * 1000),
+        createdAt: e.createdAt == null ? DateTime.now() : DateTime.fromMillisecondsSinceEpoch(e.createdAt! * 1000),
+        updatedAt: e.updatedAt == null ? DateTime.now() : DateTime.fromMillisecondsSinceEpoch(e.updatedAt! * 1000),
         width: e.width,
         height: e.height,
         durationInSeconds: e.durationInSeconds,
+        orientation: e.orientation,
       ),
     ).toList();
   }

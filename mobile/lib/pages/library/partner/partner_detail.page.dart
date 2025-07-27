@@ -38,9 +38,8 @@ class PartnerDetailPage extends HookConsumerWidget {
       if (toggleInProcess) return;
       toggleInProcess = true;
       try {
-        final ok = await ref
-            .read(partnerSharedWithProvider.notifier)
-            .updatePartner(partner, inTimeline: !inTimeline.value);
+        final ok =
+            await ref.read(partnerSharedWithProvider.notifier).updatePartner(partner, inTimeline: !inTimeline.value);
         if (ok) {
           inTimeline.value = !inTimeline.value;
           final action = inTimeline.value ? "shown on" : "hidden from";
@@ -80,7 +79,9 @@ class PartnerDetailPage extends HookConsumerWidget {
                 color: context.colorScheme.onSurface.withAlpha(10),
                 width: 1,
               ),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
+              ),
               gradient: LinearGradient(
                 colors: [
                   context.colorScheme.primary.withAlpha(10),

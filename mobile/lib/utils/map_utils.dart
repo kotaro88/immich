@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 class MapUtils {
-  MapUtils._();
+  const MapUtils._();
 
   static final Logger _log = Logger("MapUtils");
   static const defaultSourceId = 'asset-map-markers';
@@ -91,12 +91,9 @@ class MapUtils {
         }
       }
 
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
         // Open app settings only if you did not request for permission before
-        if (permission == LocationPermission.deniedForever &&
-            !shouldRequestPermission &&
-            !silent) {
+        if (permission == LocationPermission.deniedForever && !shouldRequestPermission && !silent) {
           await Geolocator.openAppSettings();
         }
         return (null, LocationPermission.deniedForever);

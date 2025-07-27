@@ -8,16 +8,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'paginated_search.provider.g.dart';
 
-final paginatedSearchProvider =
-    StateNotifierProvider<PaginatedSearchNotifier, SearchResult>(
+final paginatedSearchProvider = StateNotifierProvider<PaginatedSearchNotifier, SearchResult>(
   (ref) => PaginatedSearchNotifier(ref.watch(searchServiceProvider)),
 );
 
 class PaginatedSearchNotifier extends StateNotifier<SearchResult> {
   final SearchService _searchService;
 
-  PaginatedSearchNotifier(this._searchService)
-      : super(SearchResult(assets: [], nextPage: 1));
+  PaginatedSearchNotifier(this._searchService) : super(const SearchResult(assets: [], nextPage: 1));
 
   Future<bool> search(SearchFilter filter) async {
     if (state.nextPage == null) {
@@ -39,7 +37,7 @@ class PaginatedSearchNotifier extends StateNotifier<SearchResult> {
   }
 
   clear() {
-    state = SearchResult(assets: [], nextPage: 1);
+    state = const SearchResult(assets: [], nextPage: 1);
   }
 }
 

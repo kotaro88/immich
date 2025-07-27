@@ -15,15 +15,14 @@ import 'package:immich_mobile/entities/store.entity.dart';
 import 'package:immich_mobile/utils/image_url_builder.dart';
 
 /// The remote image provider for full size remote images
-class ImmichRemoteImageProvider
-    extends ImageProvider<ImmichRemoteImageProvider> {
+class ImmichRemoteImageProvider extends ImageProvider<ImmichRemoteImageProvider> {
   /// The [Asset.remoteId] of the asset to fetch
   final String assetId;
 
   /// The image cache manager
   final CacheManager? cacheManager;
 
-  ImmichRemoteImageProvider({
+  const ImmichRemoteImageProvider({
     required this.assetId,
     this.cacheManager,
   });

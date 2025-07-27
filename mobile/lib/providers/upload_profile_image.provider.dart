@@ -17,7 +17,7 @@ class UploadProfileImageState {
   // enum
   final UploadProfileStatus status;
   final String profileImagePath;
-  UploadProfileImageState({
+  const UploadProfileImageState({
     required this.status,
     required this.profileImagePath,
   });
@@ -50,31 +50,26 @@ class UploadProfileImageState {
 
   String toJson() => json.encode(toMap());
 
-  factory UploadProfileImageState.fromJson(String source) =>
-      UploadProfileImageState.fromMap(json.decode(source));
+  factory UploadProfileImageState.fromJson(String source) => UploadProfileImageState.fromMap(json.decode(source));
 
   @override
-  String toString() =>
-      'UploadProfileImageState(status: $status, profileImagePath: $profileImagePath)';
+  String toString() => 'UploadProfileImageState(status: $status, profileImagePath: $profileImagePath)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is UploadProfileImageState &&
-        other.status == status &&
-        other.profileImagePath == profileImagePath;
+    return other is UploadProfileImageState && other.status == status && other.profileImagePath == profileImagePath;
   }
 
   @override
   int get hashCode => status.hashCode ^ profileImagePath.hashCode;
 }
 
-class UploadProfileImageNotifier
-    extends StateNotifier<UploadProfileImageState> {
+class UploadProfileImageNotifier extends StateNotifier<UploadProfileImageState> {
   UploadProfileImageNotifier(this._userService)
       : super(
-          UploadProfileImageState(
+          const UploadProfileImageState(
             profileImagePath: '',
             status: UploadProfileStatus.idle,
           ),
@@ -104,7 +99,6 @@ class UploadProfileImageNotifier
   }
 }
 
-final uploadProfileImageProvider =
-    StateNotifierProvider<UploadProfileImageNotifier, UploadProfileImageState>(
+final uploadProfileImageProvider = StateNotifierProvider<UploadProfileImageNotifier, UploadProfileImageState>(
   ((ref) => UploadProfileImageNotifier(ref.watch(userServiceProvider))),
 );

@@ -25,8 +25,7 @@ class LibraryPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     context.locale;
-    final trashEnabled =
-        ref.watch(serverInfoProvider.select((v) => v.serverFeatures.trash));
+    final trashEnabled = ref.watch(serverInfoProvider.select((v) => v.serverFeatures.trash));
 
     return Scaffold(
       appBar: const ImmichAppBar(),
@@ -105,7 +104,9 @@ class QuickAccessButtons extends ConsumerWidget {
           color: context.colorScheme.onSurface.withAlpha(10),
           width: 1,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(20),
+        ),
         gradient: LinearGradient(
           colors: [
             context.colorScheme.primary.withAlpha(10),
@@ -240,7 +241,9 @@ class PeopleCollectionCard extends ConsumerWidget {
                 height: size,
                 width: size,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20),
+                  ),
                   gradient: LinearGradient(
                     colors: [
                       context.colorScheme.primary.withAlpha(30),
@@ -384,8 +387,7 @@ class PlacesCollectionCard extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    color:
-                        context.colorScheme.secondaryContainer.withAlpha(100),
+                    color: context.colorScheme.secondaryContainer.withAlpha(100),
                   ),
                   child: IgnorePointer(
                     child: MapThumbnail(
@@ -395,9 +397,7 @@ class PlacesCollectionCard extends StatelessWidget {
                         -157.91959,
                       ),
                       showAttribution: false,
-                      themeMode: context.isDarkTheme
-                          ? ThemeMode.dark
-                          : ThemeMode.light,
+                      themeMode: context.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
                     ),
                   ),
                 ),

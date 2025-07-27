@@ -40,9 +40,7 @@ class EditImagePage extends ConsumerWidget {
     image.image.resolve(const ImageConfiguration()).addListener(
           ImageStreamListener(
             (ImageInfo info, bool _) {
-              info.image
-                  .toByteData(format: ImageByteFormat.png)
-                  .then((byteData) {
+              info.image.toByteData(format: ImageByteFormat.png).then((byteData) {
                 if (byteData != null) {
                   completer.complete(byteData.buffer.asUint8List());
                 } else {
@@ -50,8 +48,7 @@ class EditImagePage extends ConsumerWidget {
                 }
               });
             },
-            onError: (exception, stackTrace) =>
-                completer.completeError(exception),
+            onError: (exception, stackTrace) => completer.completeError(exception),
           ),
         );
     return completer.future;
@@ -103,9 +100,7 @@ class EditImagePage extends ConsumerWidget {
         ),
         actions: <Widget>[
           TextButton(
-            onPressed: isEdited
-                ? () => _saveEditedImage(context, asset, image, ref)
-                : null,
+            onPressed: isEdited ? () => _saveEditedImage(context, asset, image, ref) : null,
             child: Text(
               "save_to_gallery".tr(),
               style: TextStyle(
@@ -124,7 +119,9 @@ class EditImagePage extends ConsumerWidget {
           ),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(7),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(7),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -135,7 +132,9 @@ class EditImagePage extends ConsumerWidget {
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(7),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(7),
+              ),
               child: Image(
                 image: image.image,
                 fit: BoxFit.contain,
@@ -149,7 +148,9 @@ class EditImagePage extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 60, right: 10, left: 10, top: 10),
         decoration: BoxDecoration(
           color: context.scaffoldBackgroundColor,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(30),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

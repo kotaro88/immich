@@ -3,19 +3,16 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/models/auth/biometric_status.model.dart';
 import 'package:local_auth/local_auth.dart';
 
-final biometricRepositoryProvider =
-    Provider((ref) => BiometricRepository(LocalAuthentication()));
+final biometricRepositoryProvider = Provider((ref) => BiometricRepository(LocalAuthentication()));
 
 class BiometricRepository {
   final LocalAuthentication _localAuth;
 
-  BiometricRepository(this._localAuth);
+  const BiometricRepository(this._localAuth);
 
   Future<BiometricStatus> getStatus() async {
-    final bool canAuthenticateWithBiometrics =
-        await _localAuth.canCheckBiometrics;
-    final bool canAuthenticate =
-        canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
+    final bool canAuthenticateWithBiometrics = await _localAuth.canCheckBiometrics;
+    final bool canAuthenticate = canAuthenticateWithBiometrics || await _localAuth.isDeviceSupported();
     final availableBiometric = await _localAuth.getAvailableBiometrics();
 
     return BiometricStatus(

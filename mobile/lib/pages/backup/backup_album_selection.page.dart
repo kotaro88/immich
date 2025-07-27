@@ -19,8 +19,7 @@ class BackupAlbumSelectionPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedBackupAlbums = ref.watch(backupProvider).selectedBackupAlbums;
     final excludedBackupAlbums = ref.watch(backupProvider).excludedBackupAlbums;
-    final enableSyncUploadAlbum =
-        useAppSettingsState(AppSettingsEnum.syncAlbums);
+    final enableSyncUploadAlbum = useAppSettingsState(AppSettingsEnum.syncAlbums);
     final isDarkTheme = context.isDarkTheme;
     final albums = ref.watch(backupProvider).availableAlbums;
 
@@ -85,8 +84,7 @@ class BackupAlbumSelectionPage extends HookConsumerWidget {
 
     buildSelectedAlbumNameChip() {
       return selectedBackupAlbums.map((album) {
-        void removeSelection() =>
-            ref.read(backupProvider.notifier).removeAlbumForBackup(album);
+        void removeSelection() => ref.read(backupProvider.notifier).removeAlbumForBackup(album);
 
         return Padding(
           padding: const EdgeInsets.only(right: 8.0),
@@ -117,9 +115,7 @@ class BackupAlbumSelectionPage extends HookConsumerWidget {
     buildExcludedAlbumNameChip() {
       return excludedBackupAlbums.map((album) {
         void removeSelection() {
-          ref
-              .watch(backupProvider.notifier)
-              .removeExcludedAlbumForBackup(album);
+          ref.watch(backupProvider.notifier).removeExcludedAlbumForBackup(album);
         }
 
         return GestureDetector(
@@ -215,11 +211,7 @@ class BackupAlbumSelectionPage extends HookConsumerWidget {
                   title: Text(
                     "backup_album_selection_page_albums_device".tr(
                       namedArgs: {
-                        'count': ref
-                            .watch(backupProvider)
-                            .availableAlbums
-                            .length
-                            .toString(),
+                        'count': ref.watch(backupProvider).availableAlbums.length.toString(),
                       },
                     ),
                     style: context.textTheme.titleSmall,
@@ -246,8 +238,10 @@ class BackupAlbumSelectionPage extends HookConsumerWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
                             ),
                             elevation: 5,
                             title: Text(

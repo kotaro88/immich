@@ -17,17 +17,15 @@ class ExternalNetworkPreference extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entries =
-        useState([AuxilaryEndpoint(url: '', status: AuxCheckStatus.unknown)]);
+    final entries = useState(
+      [const AuxilaryEndpoint(url: '', status: AuxCheckStatus.unknown)],
+    );
     final canSave = useState(false);
 
     saveEndpointList() {
-      canSave.value =
-          entries.value.every((e) => e.status == AuxCheckStatus.valid);
+      canSave.value = entries.value.every((e) => e.status == AuxCheckStatus.valid);
 
-      final endpointList = entries.value
-          .where((url) => url.status == AuxCheckStatus.valid)
-          .toList();
+      final endpointList = entries.value.where((url) => url.status == AuxCheckStatus.valid).toList();
 
       final jsonString = jsonEncode(endpointList);
 
@@ -38,8 +36,7 @@ class ExternalNetworkPreference extends HookConsumerWidget {
     }
 
     updateValidationStatus(String url, int index, AuxCheckStatus status) {
-      entries.value[index] =
-          entries.value[index].copyWith(url: url, status: status);
+      entries.value[index] = entries.value[index].copyWith(url: url, status: status);
 
       saveEndpointList();
     }
@@ -89,8 +86,7 @@ class ExternalNetworkPreference extends HookConsumerWidget {
         }
 
         final List<dynamic> jsonList = jsonDecode(jsonString);
-        entries.value =
-            jsonList.map((e) => AuxilaryEndpoint.fromJson(e)).toList();
+        entries.value = jsonList.map((e) => AuxilaryEndpoint.fromJson(e)).toList();
         return null;
       },
       const [],
@@ -169,7 +165,7 @@ class ExternalNetworkPreference extends HookConsumerWidget {
                           ? () {
                               entries.value = [
                                 ...entries.value,
-                                AuxilaryEndpoint(
+                                const AuxilaryEndpoint(
                                   url: '',
                                   status: AuxCheckStatus.unknown,
                                 ),

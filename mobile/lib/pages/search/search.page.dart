@@ -48,8 +48,7 @@ class SearchPage extends HookConsumerWidget {
               isFavorite: false,
             ),
         mediaType: prefilter?.mediaType ?? AssetType.other,
-        language:
-            "${context.locale.languageCode}-${context.locale.countryCode}",
+        language: "${context.locale.languageCode}-${context.locale.countryCode}",
       ),
     );
 
@@ -87,9 +86,7 @@ class SearchPage extends HookConsumerWidget {
 
       isSearching.value = true;
       ref.watch(paginatedSearchProvider.notifier).clear();
-      final hasResult = await ref
-          .watch(paginatedSearchProvider.notifier)
-          .search(filter.value);
+      final hasResult = await ref.watch(paginatedSearchProvider.notifier).search(filter.value);
 
       if (!hasResult) {
         context.showSnackBar(
@@ -103,9 +100,7 @@ class SearchPage extends HookConsumerWidget {
 
     loadMoreSearchResult() async {
       isSearching.value = true;
-      final hasResult = await ref
-          .watch(paginatedSearchProvider.notifier)
-          .search(filter.value);
+      final hasResult = await ref.watch(paginatedSearchProvider.notifier).search(filter.value);
 
       if (!hasResult) {
         context.showSnackBar(
@@ -147,7 +142,7 @@ class SearchPage extends HookConsumerWidget {
     );
 
     showPeoplePicker() {
-      handleOnSelect(Set<Person> value) {
+      handleOnSelect(Set<PersonDto> value) {
         filter.value = filter.value.copyWith(
           people: value,
         );
@@ -416,8 +411,7 @@ class SearchPage extends HookConsumerWidget {
                 ),
               );
               if (value) {
-                filterText
-                    .add('search_filter_display_option_not_in_album'.tr());
+                filterText.add('search_filter_display_option_not_in_album'.tr());
               }
               break;
             case DisplayOption.archive:
@@ -511,16 +505,11 @@ class SearchPage extends HookConsumerWidget {
       search();
     }
 
-    IconData getSearchPrefixIcon() {
-      switch (textSearchType.value) {
-        case TextSearchType.context:
-          return Icons.image_search_rounded;
-        case TextSearchType.filename:
-          return Icons.abc_rounded;
-        case TextSearchType.description:
-          return Icons.text_snippet_outlined;
-      }
-    }
+    IconData getSearchPrefixIcon() => switch (textSearchType.value) {
+          TextSearchType.context => Icons.image_search_rounded,
+          TextSearchType.filename => Icons.abc_rounded,
+          TextSearchType.description => Icons.text_snippet_outlined,
+        };
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -533,8 +522,10 @@ class SearchPage extends HookConsumerWidget {
               style: MenuStyle(
                 elevation: const WidgetStatePropertyAll(1),
                 shape: WidgetStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
+                  const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(24),
+                    ),
                   ),
                 ),
                 padding: const WidgetStatePropertyAll(
@@ -566,9 +557,7 @@ class SearchPage extends HookConsumerWidget {
                       'search_by_context'.tr(),
                       style: context.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: textSearchType.value == TextSearchType.context
-                            ? context.colorScheme.primary
-                            : null,
+                        color: textSearchType.value == TextSearchType.context ? context.colorScheme.primary : null,
                       ),
                     ),
                     selectedColor: context.colorScheme.primary,
@@ -586,9 +575,7 @@ class SearchPage extends HookConsumerWidget {
                       'search_filter_filename'.tr(),
                       style: context.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: textSearchType.value == TextSearchType.filename
-                            ? context.colorScheme.primary
-                            : null,
+                        color: textSearchType.value == TextSearchType.filename ? context.colorScheme.primary : null,
                       ),
                     ),
                     selectedColor: context.colorScheme.primary,
@@ -606,15 +593,11 @@ class SearchPage extends HookConsumerWidget {
                       'search_by_description'.tr(),
                       style: context.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color:
-                            textSearchType.value == TextSearchType.description
-                                ? context.colorScheme.primary
-                                : null,
+                        color: textSearchType.value == TextSearchType.description ? context.colorScheme.primary : null,
                       ),
                     ),
                     selectedColor: context.colorScheme.primary,
-                    selected:
-                        textSearchType.value == TextSearchType.description,
+                    selected: textSearchType.value == TextSearchType.description,
                   ),
                   onPressed: () {
                     textSearchType.value = TextSearchType.description;
@@ -631,7 +614,9 @@ class SearchPage extends HookConsumerWidget {
               color: context.colorScheme.onSurface.withAlpha(0),
               width: 0,
             ),
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: const BorderRadius.all(
+              Radius.circular(24),
+            ),
             gradient: LinearGradient(
               colors: [
                 context.colorScheme.primary.withValues(alpha: 0.075),
@@ -646,9 +631,7 @@ class SearchPage extends HookConsumerWidget {
             hintText: searchHintText.value,
             key: const Key('search_text_field'),
             controller: textSearchController,
-            contentPadding: prefilter != null
-                ? const EdgeInsets.only(left: 24)
-                : const EdgeInsets.all(8),
+            contentPadding: prefilter != null ? const EdgeInsets.only(left: 24) : const EdgeInsets.all(8),
             prefixIcon: prefilter != null
                 ? null
                 : Icon(
@@ -745,17 +728,13 @@ class SearchResultGrid extends StatelessWidget {
         padding: const EdgeInsets.only(top: 8.0),
         child: NotificationListener<ScrollEndNotification>(
           onNotification: (notification) {
-            final isBottomSheetNotification = notification.context
-                    ?.findAncestorWidgetOfExactType<
-                        DraggableScrollableSheet>() !=
-                null;
+            final isBottomSheetNotification =
+                notification.context?.findAncestorWidgetOfExactType<DraggableScrollableSheet>() != null;
 
             final metrics = notification.metrics;
             final isVerticalScroll = metrics.axis == Axis.vertical;
 
-            if (metrics.pixels >= metrics.maxScrollExtent &&
-                isVerticalScroll &&
-                !isBottomSheetNotification) {
+            if (metrics.pixels >= metrics.maxScrollExtent && isVerticalScroll && !isBottomSheetNotification) {
               onScrollEnd();
             }
 
@@ -771,9 +750,7 @@ class SearchResultGrid extends StatelessWidget {
             dragScrollLabelEnabled: false,
             emptyIndicator: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: !isSearching
-                  ? const SearchEmptyContent()
-                  : const SizedBox.shrink(),
+              child: !isSearching ? const SearchEmptyContent() : const SizedBox.shrink(),
             ),
           ),
         ),
@@ -795,9 +772,7 @@ class SearchEmptyContent extends StatelessWidget {
           const SizedBox(height: 40),
           Center(
             child: Image.asset(
-              context.isDarkTheme
-                  ? 'assets/polaroid-dark.png'
-                  : 'assets/polaroid-light.png',
+              context.isDarkTheme ? 'assets/polaroid-dark.png' : 'assets/polaroid-light.png',
               height: 125,
             ),
           ),
@@ -823,7 +798,9 @@ class QuickLinkList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(20),
+        ),
         border: Border.all(
           color: context.colorScheme.outline.withAlpha(10),
           width: 1,

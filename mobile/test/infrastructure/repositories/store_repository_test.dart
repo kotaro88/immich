@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:immich_mobile/domain/interfaces/store.interface.dart';
 import 'package:immich_mobile/domain/models/store.model.dart';
 import 'package:immich_mobile/domain/models/user.model.dart';
 import 'package:immich_mobile/infrastructure/entities/store.entity.dart';
@@ -42,7 +41,7 @@ Future<void> _populateStore(Isar db) async {
 
 void main() {
   late Isar db;
-  late IStoreRepository sut;
+  late IsarStoreRepository sut;
 
   setUp(() async {
     db = await TestUtils.initIsar();
@@ -67,8 +66,7 @@ void main() {
     });
 
     test('converts datetime', () async {
-      DateTime? backupFailedSince =
-          await sut.tryGet(StoreKey.backupFailedSince);
+      DateTime? backupFailedSince = await sut.tryGet(StoreKey.backupFailedSince);
       expect(backupFailedSince, isNull);
       await sut.insert(StoreKey.backupFailedSince, _kTestBackupFailed);
       backupFailedSince = await sut.tryGet(StoreKey.backupFailedSince);

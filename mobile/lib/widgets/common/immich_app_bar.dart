@@ -27,8 +27,7 @@ class ImmichAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final BackUpState backupState = ref.watch(backupProvider);
-    final bool isEnableAutoBackup =
-        backupState.backgroundBackup || backupState.autoBackup;
+    final bool isEnableAutoBackup = backupState.backgroundBackup || backupState.autoBackup;
     final ServerInfo serverInfoState = ref.watch(serverInfoProvider);
     final user = ref.watch(currentUserProvider);
     final isDarkTheme = context.isDarkTheme;
@@ -42,7 +41,7 @@ class ImmichAppBar extends ConsumerWidget implements PreferredSizeWidget {
           useRootNavigator: false,
           builder: (ctx) => const ImmichAppBarDialog(),
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: Badge(
           label: Container(
             decoration: BoxDecoration(
@@ -57,9 +56,8 @@ class ImmichAppBar extends ConsumerWidget implements PreferredSizeWidget {
           ),
           backgroundColor: Colors.transparent,
           alignment: Alignment.bottomRight,
-          isLabelVisible: serverInfoState.isVersionMismatch ||
-              ((user?.isAdmin ?? false) &&
-                  serverInfoState.isNewReleaseAvailable),
+          isLabelVisible:
+              serverInfoState.isVersionMismatch || ((user?.isAdmin ?? false) && serverInfoState.isNewReleaseAvailable),
           offset: const Offset(-2, -12),
           child: user == null
               ? const Icon(
@@ -92,8 +90,7 @@ class ImmichAppBar extends ConsumerWidget implements PreferredSizeWidget {
               semanticsLabel: 'backup_controller_page_backup'.tr(),
             ),
           );
-        } else if (backupState.backupProgress !=
-                BackUpProgressEnum.inBackground &&
+        } else if (backupState.backupProgress != BackUpProgressEnum.inBackground &&
             backupState.backupProgress != BackUpProgressEnum.manualInProgress) {
           return Icon(
             Icons.check_outlined,
@@ -120,7 +117,7 @@ class ImmichAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
       return InkWell(
         onTap: () => context.pushRoute(const BackupControllerRoute()),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: Badge(
           label: Container(
             width: widgetSize / 2,
