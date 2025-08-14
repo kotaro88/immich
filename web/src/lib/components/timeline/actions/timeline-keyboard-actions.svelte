@@ -27,7 +27,6 @@
   import { DateTime } from 'luxon';
   import { t } from 'svelte-i18n';
   import DeleteAssetDialog from './delete-asset-dialog.svelte';
-
   let { isViewing: showAssetViewer } = assetViewingStore;
 
   interface Props {
